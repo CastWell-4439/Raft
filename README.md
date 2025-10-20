@@ -3,7 +3,7 @@
 
 **项目结构**  
 
-···plaintext
+··· plaintext
 Raft/
 ├── cmd/                  # 程序入口
 │   ├── node/             # 节点服务入口
