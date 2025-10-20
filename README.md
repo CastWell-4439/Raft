@@ -68,23 +68,23 @@ Raft/
 
 **使用方法**  
 1.复制配置文件并修改为不同节点的配置：
-  ···bash
+```bash
   cp config.json config-node1.json
   cp config.json config-node2.json
   cp config.json config-node3.json
-···  
+``` 
 2.分别启动
-···bash
+```bash
 go run cmd/node/main.go -config config-node1.json
 
 go run cmd/node/main.go -config config-node2.json
 
 go run cmd/node/main.go -config config-node3.json
-···   
+``` 
 3.使用客户端向领导人节点发送命令  
-···bash
+```bash
 go run cmd/client/main.go -serveraddr "0.0.0.0:8080" -command " "
-····   
+```
 
 更新：  
 1.修改了client中call的和server中register的名字不一样导致无法使用的问题  
