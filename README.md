@@ -84,4 +84,8 @@ go run cmd/node/main.go -config config-node3.json
 3.使用客户端向领导人节点发送命令  
 ···bash
 go run cmd/client/main.go -serveraddr "0.0.0.0:8080" -command " "
-····
+····   
+
+更新：  
+1.修改了client中call的和server中register的名字不一样导致无法使用的问题  
+2.修改了log.go中check（）的逻辑问题
