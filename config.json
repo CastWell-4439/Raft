@@ -1,0 +1,11 @@
+{
+  "NodeID": 1,
+  "RPCAddr": "0.0.0.0:8080",
+  "FriendsAddr": {
+    "2": "node2:8081",
+    "3": "node3:8082"
+  },
+  "HeartBeat": "50ms",
+  "TimeMax": "200ms",
+  "TimeMin": "100ms"
+}

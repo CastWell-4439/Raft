@@ -5,6 +5,7 @@ import (
 	"raft/internal/rpcs"
 	"raft/pkg/types"
 	"sort"
+	"time"
 )
 
 type FuZhi struct {
@@ -13,16 +14,17 @@ type FuZhi struct {
 	Log     *LogManner
 	Client  rpcs.RPCClient
 	Friends []int
+	Stop    chan struct{}
 }
 
 // 重置日志相关信息
-func (f *FuZhi) reset() {
-	logs := f.State.GetLog()
+func (fz *FuZhi) reset() {
+	logs := fz.State.GetLog()
 	index := len(logs)
 
-	for _, fri := range f.Friends {
-		f.State.NextIndex[fri] = index //和leader相同
-		f.State.MatchIndex[fri] = -1   //未同步
+	for _, fri := range fz.Friends {
+		fz.State.NextIndex[fri] = index //和leader相同
+		fz.State.MatchIndex[fri] = -1   //未同步
 	}
 }
 
@@ -33,9 +35,56 @@ func NewFuZhi(node int, state *State, log *LogManner, client rpcs.RPCClient, fri
 		Log:     log,
 		Client:  client,
 		Friends: friend,
+		Stop:    make(chan struct{}),
 	}
 	fz.reset()
 	return fz
+}
+
+func (fz *FuZhi) sendHeartBeat(fri int) {
+	req := types.AppendEntriesRequest{
+		Term:         fz.State.GetTerm(),
+		LeaderId:     fz.Node,
+		PreLogIndex:  -1,
+		PreLogTerm:   -1,
+		Entries:      []types.LogEntry{},
+		LeaderCommit: fz.State.GetCommit(),
+	}
+	res, err := fz.Client.AppendEntries(fri, req)
+	if err != nil {
+		log.Printf("fail to sen heartbeat,%v", err)
+		return
+	}
+
+	if !res.OK && res.Term > fz.State.GetTerm() {
+		fz.State.SetTerm(res.Term)
+		fz.State.SetState(types.Follower)
+		fz.State.SetVote(-1)
+	}
+}
+
+func (fz *FuZhi) sendHeartBeats() {
+	for _, fri := range fz.Friends {
+		go fz.sendHeartBeat(fri)
+	}
+}
+
+func (fz *FuZhi) StartHeartBeat(times time.Duration) {
+	go func() {
+		heart := time.NewTicker(times)
+		defer heart.Stop()
+
+		for {
+			select {
+			case <-fz.Stop:
+				return
+			case <-heart.C:
+				if fz.State.GetState() == types.Leader {
+					fz.sendHeartBeats()
+				}
+			}
+		}
+	}()
 }
 
 // 根据多数的进度更新提交索引
