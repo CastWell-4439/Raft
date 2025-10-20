@@ -28,7 +28,7 @@ func (c *RaftClient) RequestVote(friendID int, req types.VoteRequest) (bool, err
 	defer client.Close() //神经啊这也要处理错误处理毛线,莫名其妙这提示
 
 	var res types.VoteResponse
-	err = client.Call("XuanJuManner.RequestVote", req, &res)
+	err = client.Call("RaftNode.RequestVote", req, &res)
 	if err != nil {
 		return false, err
 	}
@@ -44,7 +44,7 @@ func (c *RaftClient) AppendEntries(friendID int, req types.AppendEntriesRequest)
 	defer client.Close()
 
 	var res types.AppendEntriesResponse
-	err = client.Call("XuanJuManner.AppendEntries", req, &res)
+	err = client.Call("RaftNode.AppendEntries", req, &res)
 	if err != nil {
 		return nil, err
 	}

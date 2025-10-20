@@ -61,8 +61,12 @@ func (l *LogManner) Check(LogIndex int, LogTerm int) bool {
 	LastIndex, LastTerm := l.state.GetLogAndTerm()
 
 	//首先任期大的更新，若一样更长的日志更新
-	if LogIndex != LastIndex {
-		return LogTerm > LastTerm
+	if LogTerm > LastTerm {
+		return true
+	} else if LogTerm == LastTerm && LastIndex <= LogIndex {
+		return true
+	} else {
+		return false
 	}
-	return LogIndex >= LastIndex
+
 }

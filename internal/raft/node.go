@@ -40,6 +40,13 @@ func NewNode(config types.NodeConfig, addr map[int]string) *Node {
 			client,
 			config.Friends,
 		),
+		FuZhi: NewFuZhi(
+			config.ID,
+			state,
+			log,
+			client,
+			config.Friends,
+		),
 	}
 	return node
 }
