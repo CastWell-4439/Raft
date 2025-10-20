@@ -3,7 +3,7 @@
 
 **项目结构**  
 
-··· plaintext
+```plaintext
 Raft/
 ├── cmd/                  # 程序入口
 │   ├── node/             # 节点服务入口
@@ -29,7 +29,7 @@ Raft/
 │       └── common.go     # 状态与RPC类型定义
 ├── config.json           # 节点配置文件
 └── go.mod                
-···
+```
 
 **功能**  
 核心功能
